@@ -2,9 +2,30 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const dataServices = require('./services/data.services')
 const cors = require('cors')
+const dotenv = require('dotenv')
+const mongoose = require('mongoose')
+// const connectDb = require('./services/db')
+const port = process.env.PORT || 3000;
+
+dotenv.config()
+
+const connectDb = async () => {
+    try{
+        const connect = await mongoose.connect(process.env.MONGO_URI)
+        console.log(`mongoDB is connected to ${connect.connection.host}`);
+    }
+    catch(error){
+        console.log(`Error : ${error.message}`);
+        process.exit(1)
+    }
+}
+
+connectDb ()
 
 const app = express()
 app.use(express.json())
+
+
 
 app.use(cors({
     origin:'http://localhost:4200',
@@ -77,6 +98,4 @@ app.post('/delete', jwtMiddleWare, (req,res)=>{
     })
 })
 
-app.listen(3000, ()=>{
-    console.log("server started")
-})
+app.listen(port, console.log(`Server Started at ${port}`))
